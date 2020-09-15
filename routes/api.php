@@ -18,5 +18,11 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+Route::group(['prefix'=>'auth'],function() {
+    Route::post('/login', 'AuthController@login');
+    Route::post('/register', 'AuthController@register');
+});
+
+
 Route::apiResource('employees', 'EmployeeController');
 
