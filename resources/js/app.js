@@ -1,18 +1,27 @@
-
 window._ = require('lodash');
-
-
-window.Vue = require('vue');
-
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-
-
-
 window.axios = require('axios');
-
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+window.axios.defaults.headers['crossDomain'] = true;
+window.axios.defaults.headers['Access-Control-Allow-Origin'] = '*';
+
+import Vue from 'vue';
+import vuetify from './plugin/vuetify';
+import MainApp from './components/AppComponent';
+import router from './router';
+import store from './store';
+
+// require('./store/subscriber');
+
+axios.defaults.baseURL = 'http://127.0.0.1:8000/'
+
 
 
 const app = new Vue({
+    vuetify: vuetify,
+    router,
+    store,
     el: '#app',
+    components: {
+        MainApp
+    },
 });
