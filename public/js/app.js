@@ -98119,14 +98119,16 @@ var routes = [{
     //     path: 'posts',
     //     component: PostsComponent,
     // },
-  ],
-  beforeEnter: function beforeEnter(to, from, next) {
-    axios.get('/admin/verify', {}).then(function (res) {
-      next();
-    })["catch"](function (err) {
-      next('/login');
-    });
-  }
+  ] // beforeEnter: (to, from, next) => {
+  //    axios.get('/admin/verify',{})
+  //    .then(res => {
+  //        next();
+  //    })
+  //    .catch(err => {
+  //        next('/login')
+  //    })
+  // }
+
 }];
 var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   mode: "history",
