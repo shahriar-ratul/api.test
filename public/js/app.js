@@ -2227,11 +2227,44 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       valid: true,
       dialog: false,
+      dialog2: false,
       loading: false,
       snackbar: false,
       text: "item deleted successfully",
@@ -2266,6 +2299,12 @@ __webpack_require__.r(__webpack_exports__);
         name: "",
         email: "",
         company_id: ""
+      },
+      detailsItems: {
+        name: "",
+        email: "",
+        company: "",
+        birthday: ""
       }
     };
   },
@@ -2324,45 +2363,58 @@ __webpack_require__.r(__webpack_exports__);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
-    deleteItem: function deleteItem(item) {
+    detailsItem: function detailsItem(item) {
       var _this3 = this;
+
+      this.editedIndex = this.employees.indexOf(item); // console.log(item.href.details);
+
+      axios.get(item.href.details).then(function (res) {
+        // console.log(res);
+        _this3.detailsItems = Object.assign({}, res.data.data);
+      })["catch"](function (err) {
+        console.error(err);
+      });
+      this.dialog2 = true;
+    },
+    deleteItem: function deleteItem(item) {
+      var _this4 = this;
 
       var index = this.employees.indexOf(item);
       var decide = confirm("Are you sure you want to delete this item?");
 
       if (decide) {
         axios["delete"]("employees/" + item.id).then(function (result) {
-          _this3.snackbar = true;
-          _this3.text = result.data.message;
+          _this4.snackbar = true;
+          _this4.text = result.data.message;
 
-          _this3.employees.splice(index, 1);
+          _this4.employees.splice(index, 1);
         })["catch"](function (err) {
           console.log(err.response);
         });
       }
     },
     close: function close() {
-      var _this4 = this;
+      var _this5 = this;
 
       this.dialog = false;
       this.$nextTick(function () {
-        _this4.editedItem = Object.assign({}, _this4.defaultItem);
-        _this4.editedIndex = -1;
+        _this5.editedItem = Object.assign({}, _this5.defaultItem);
+        _this5.editedIndex = -1;
       });
     },
     save: function save() {
-      var _this6 = this;
+      var _this7 = this;
 
       if (this.editedIndex > -1) {
         // console.log('edit')
         var index = this.editedIndex;
         this.$nextTick(function () {
-          var _this5 = this;
+          var _this6 = this;
 
           axios.put("employees/" + this.editedItem.id, this.editedItem).then(function (res) {
-            console.log(res.data.data); // console.log(this.employees[index])
-
-            Object.assign(_this5.employees[index], res.data.data); // this.$set(this.editedItem, this.editedItem.id, res.data.employee)
+            // console.log(res.data.data);
+            // console.log(this.employees[index])
+            Object.assign(_this6.employees[index], res.data.data); // this.$set(this.editedItem, this.editedItem.id, res.data.employee)
           })["catch"](function (err) {
             console.log(err.response);
           });
@@ -2371,7 +2423,7 @@ __webpack_require__.r(__webpack_exports__);
         axios.post("employees", this.editedItem).then(function (res) {
           console.log(res.data);
 
-          _this6.employees.push(res.data.employee);
+          _this7.employees.push(res.data.employee);
         })["catch"](function (err) {
           console.dir(err);
         }); // this.employees.push(this.editedItem)
@@ -22222,6 +22274,176 @@ var render = function() {
                       )
                     ],
                     1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-dialog",
+                    {
+                      attrs: { width: "500" },
+                      model: {
+                        value: _vm.dialog2,
+                        callback: function($$v) {
+                          _vm.dialog2 = $$v
+                        },
+                        expression: "dialog2"
+                      }
+                    },
+                    [
+                      _c(
+                        "v-card",
+                        [
+                          _c("v-card-title", { staticClass: "headline" }, [
+                            _vm._v("Employee Details")
+                          ]),
+                          _vm._v(" "),
+                          _c("v-divider"),
+                          _vm._v(" "),
+                          _c(
+                            "v-card-text",
+                            [
+                              _c(
+                                "v-container",
+                                [
+                                  _c(
+                                    "v-row",
+                                    [
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              label: "Name",
+                                              readonly: ""
+                                            },
+                                            model: {
+                                              value: _vm.detailsItems.name,
+                                              callback: function($$v) {
+                                                _vm.$set(
+                                                  _vm.detailsItems,
+                                                  "name",
+                                                  $$v
+                                                )
+                                              },
+                                              expression: "detailsItems.name"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              label: "Email",
+                                              readonly: ""
+                                            },
+                                            model: {
+                                              value: _vm.detailsItems.email,
+                                              callback: function($$v) {
+                                                _vm.$set(
+                                                  _vm.detailsItems,
+                                                  "email",
+                                                  $$v
+                                                )
+                                              },
+                                              expression: "detailsItems.email"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              label: "Company",
+                                              readonly: ""
+                                            },
+                                            model: {
+                                              value: _vm.detailsItems.company,
+                                              callback: function($$v) {
+                                                _vm.$set(
+                                                  _vm.detailsItems,
+                                                  "company",
+                                                  $$v
+                                                )
+                                              },
+                                              expression: "detailsItems.company"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      ),
+                                      _vm._v(" "),
+                                      _c(
+                                        "v-col",
+                                        { attrs: { cols: "12" } },
+                                        [
+                                          _c("v-text-field", {
+                                            attrs: {
+                                              label: "Birthday",
+                                              readonly: ""
+                                            },
+                                            model: {
+                                              value: _vm.detailsItems.birthday,
+                                              callback: function($$v) {
+                                                _vm.$set(
+                                                  _vm.detailsItems,
+                                                  "birthday",
+                                                  $$v
+                                                )
+                                              },
+                                              expression:
+                                                "detailsItems.birthday"
+                                            }
+                                          })
+                                        ],
+                                        1
+                                      )
+                                    ],
+                                    1
+                                  )
+                                ],
+                                1
+                              )
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c("v-divider"),
+                          _vm._v(" "),
+                          _c(
+                            "v-card-actions",
+                            [
+                              _c("v-spacer"),
+                              _vm._v(" "),
+                              _c(
+                                "v-btn",
+                                {
+                                  attrs: { color: "primary", text: "" },
+                                  on: {
+                                    click: function($event) {
+                                      _vm.dialog2 = false
+                                    }
+                                  }
+                                },
+                                [_vm._v("Close")]
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
                   )
                 ],
                 1
@@ -22242,7 +22464,7 @@ var render = function() {
                   attrs: { small: "" },
                   on: {
                     click: function($event) {
-                      return _vm.editItem(item)
+                      return _vm.detailsItem(item)
                     }
                   }
                 },

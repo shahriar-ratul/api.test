@@ -45,10 +45,42 @@
                     </v-form>
                 </v-card>
             </v-dialog>
+
+            <v-dialog v-model="dialog2" width="500">
+                <v-card>
+                    <v-card-title class="headline">Employee Details</v-card-title>
+
+                    <v-divider></v-divider>
+                    <v-card-text>
+                        <v-container>
+                            <v-row>
+                                <v-col cols="12">
+                                    <v-text-field v-model="detailsItems.name" label="Name" readonly></v-text-field>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-text-field v-model="detailsItems.email" label="Email" readonly></v-text-field>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-text-field v-model="detailsItems.company" label="Company" readonly></v-text-field>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-text-field v-model="detailsItems.birthday" label="Birthday" readonly></v-text-field>
+                                </v-col>
+                            </v-row>
+                        </v-container>
+                    </v-card-text>
+                    <v-divider></v-divider>
+
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" text @click="dialog2 = false">Close</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-toolbar>
     </template>
     <template v-slot:item.actions="{ item }">
-        <v-icon small class="mr-2" @click="editItem(item)">mdi-eye</v-icon>
+        <v-icon small class="mr-2" @click="detailsItem(item)">mdi-eye</v-icon>
         <v-icon small class="mr-2" @click="editItem(item)">mdi-pencil</v-icon>
         <v-icon small @click="deleteItem(item)">mdi-delete</v-icon>
     </template>
@@ -70,6 +102,7 @@ export default {
     data: () => ({
         valid: true,
         dialog: false,
+        dialog2: false,
         loading: false,
         snackbar: false,
         text: "item deleted successfully",
@@ -108,6 +141,12 @@ export default {
             name: "",
             email: "",
             company_id: "",
+        },
+        detailsItems: {
+            name: "",
+            email: "",
+            company: "",
+            birthday: "",
         },
     }),
 
@@ -175,6 +214,23 @@ export default {
             this.dialog = true;
         },
 
+        detailsItem(item) {
+            this.editedIndex = this.employees.indexOf(item);
+            // console.log(item.href.details);
+
+            axios
+                .get(item.href.details)
+                .then((res) => {
+                    // console.log(res);
+                    this.detailsItems = Object.assign({}, res.data.data);
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+
+            this.dialog2 = true;
+        },
+
         deleteItem(item) {
             const index = this.employees.indexOf(item);
             let decide = confirm("Are you sure you want to delete this item?");
@@ -208,7 +264,7 @@ export default {
                     axios
                         .put("employees/" + this.editedItem.id, this.editedItem)
                         .then((res) => {
-                            console.log(res.data.data);
+                            // console.log(res.data.data);
                             // console.log(this.employees[index])
                             Object.assign(this.employees[index], res.data.data);
                             // this.$set(this.editedItem, this.editedItem.id, res.data.employee)

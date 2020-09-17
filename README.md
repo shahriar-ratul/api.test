@@ -7,7 +7,7 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
 </p>
 
-## Install project 
+## Install project
 
 git clone https://github.com/shahriar-ratul/api.test.git
 
@@ -19,8 +19,13 @@ npm install
 
 npm run dev
 
-php artisan migrate:fresh --seed
+php artisan migrate
 
 php artisan passport:install --uuids
 
+php artisan db:seed
 
+use for login
+
+email: admin@gmail.com
+password: 123456
