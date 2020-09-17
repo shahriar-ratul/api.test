@@ -19,7 +19,7 @@
                 <v-list-item-action>
                     <v-icon color="grey darken-1">mdi-cog</v-icon>
                 </v-list-item-action>
-                <v-list-item-title class="grey--text text--darken-1">Manage Subscriptions</v-list-item-title>
+                <v-list-item-title>Logout</v-list-item-title>
             </v-list-item>
         </v-list>
     </v-navigation-drawer>
@@ -47,7 +47,7 @@
                     <v-snackbar v-model="snackbar" color="success">
                         {{ text }}
                         <template v-slot:action="{ attrs }">
-                            <v-btn color="error" text v-bind="attrs" @click="snackbar = false">Close</v-btn>
+                            <v-btn color="success" text v-bind="attrs" @click="snackbar = false">Close</v-btn>
                         </template>
                     </v-snackbar>
                 </v-col>
@@ -61,7 +61,7 @@
 export default {
     name: "AdminComponent",
     props: {
-        source: String
+        source: String,
     },
     data: () => ({
         drawer: null,
@@ -69,23 +69,12 @@ export default {
         theme: true,
         text: "You are Logged in Successfully",
         items: [{
-                icon: "mdi-tag",
-                text: "Tags",
-                action: "/admin/tags"
-            },
-            {
-                icon: "mdi-folder-multiple",
-                text: "Categories",
-                action: "/admin/categories"
-            },
-            {
-                icon: "mdi-post-outline",
-                text: "posts",
-                action: "/admin/posts"
-            },
-
-        ]
+            icon: "mdi-tag",
+            text: "Employee",
+            action: "/admin/employee",
+        }, ],
     }),
+
     mounted: function () {
         this.snackbar = !!localStorage.getItem("loggedIn");
         localStorage.removeItem("loggedIn");
@@ -93,12 +82,11 @@ export default {
     watch: {
         theme: function (old, newval) {
             this.$vuetify.theme.dark = newval;
-        }
-
+        },
     },
     created() {
         this.$vuetify.theme.dark = false;
-    }
+    },
 };
 </script>
 

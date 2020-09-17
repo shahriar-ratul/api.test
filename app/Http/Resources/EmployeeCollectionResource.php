@@ -18,6 +18,7 @@ class EmployeeCollectionResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
+            'company_id' => $this->company_id,
             'href' => [
                 'details' => route('employees.show', $this->id)
             ],

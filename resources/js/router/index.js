@@ -2,10 +2,9 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import AdminDashboard from '../components/AdminComponent.vue'
 import LoginComponent from "../components/LoginComponent.vue";
-// import DashboardComponent from '../components/pages/Dashboard.vue'
-// import TagsComponent from '../components/pages/Tag.vue'
-// import CategoriesComponent from '../components/pages/Category.vue'
-// import PostsComponent from '../components/pages/Post.vue'
+import DashboardComponent from '../components/pages/Dashboard.vue'
+import EmployeeComponent from '../components/pages/Employee.vue'
+
 
 
 Vue.use(VueRouter);
@@ -14,7 +13,7 @@ const routes = [
 
     {
         path: "/",
-        redirect:'Login'
+        redirect: 'Login'
     },
     {
         path: "/login",
@@ -26,33 +25,26 @@ const routes = [
         path: "/admin",
         component: AdminDashboard,
 
-        children: [
-            // {
-            //     path: '/',
-            //     component: DashboardComponent,
-            // },
-            // {
-            //     path: 'tags',
-            //     component: TagsComponent,
-            // },
-            // {
-            //     path: 'categories',
-            //     component: CategoriesComponent,
-            // },
-            // {
-            //     path: 'posts',
-            //     component: PostsComponent,
-            // },
+        children: [{
+                path: '/',
+                component: DashboardComponent,
+            },
+            {
+                path: 'employee',
+                component: EmployeeComponent,
+            },
+
+
         ],
-        // beforeEnter: (to, from, next) => {
-        //    axios.get('/admin/verify',{})
-        //    .then(res => {
-        //        next();
-        //    })
-        //    .catch(err => {
-        //        next('/login')
-        //    })
-        // }
+        beforeEnter: (to, from, next) => {
+            axios.get('/auth/me', {})
+                .then(res => {
+                    next();
+                })
+                .catch(err => {
+                    next('/login')
+                })
+        }
 
     },
 
@@ -71,7 +63,7 @@ router.beforeEach((to, from, next) => {
 
 
     const token = localStorage.getItem("token") || null
-    window.axios.defaults.headers['Authorization'] = 'Bearer '+token;
+    window.axios.defaults.headers['Authorization'] = 'Bearer ' + token;
     next();
 
 

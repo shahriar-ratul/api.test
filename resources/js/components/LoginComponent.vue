@@ -8,7 +8,6 @@
                         <v-toolbar color="error" dark flat>
                             <v-toolbar-title>Login form</v-toolbar-title>
                             <v-spacer></v-spacer>
-
                         </v-toolbar>
                         <v-card-text>
                             <v-progress-linear :active="loading" :indeterminate="loading" absolute bottom color="deep-purple accent-4"></v-progress-linear>
@@ -25,11 +24,8 @@
                     </v-card>
                     <v-snackbar v-model="snackbar" color="error">
                         {{ text }}
-
                         <template v-slot:action="{ attrs }">
-                            <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
-                                Close
-                            </v-btn>
+                            <v-btn color="white" text v-bind="attrs" @click="snackbar = false">Close</v-btn>
                         </template>
                     </v-snackbar>
                 </v-col>
@@ -46,12 +42,10 @@ export default {
         return {
             valid: true,
             emailRules: [
-                v => !!v || 'E-mail is required',
-                v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+                (v) => !!v || "E-mail is required",
+                (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
             ],
-            passwordRules: [
-                v => !!v || 'Password is required',
-            ],
+            passwordRules: [(v) => !!v || "Password is required"],
             form: {
                 email: "",
                 password: "",
@@ -59,50 +53,57 @@ export default {
 
             loading: false,
             snackbar: false,
-            text: '',
-        }
-
+            text: "",
+        };
     },
     methods: {
         Login() {
             // Add a request interceptor
-            axios.interceptors.request.use((config) => {
-                this.loading = true;
-                return config;
-            }, (error) => {
-                // Do something with request error
-                return Promise.reject(error);
-            });
+            axios.interceptors.request.use(
+                (config) => {
+                    this.loading = true;
+                    return config;
+                },
+                (error) => {
+                    // Do something with request error
+                    return Promise.reject(error);
+                }
+            );
 
             // Add a response interceptor
-            axios.interceptors.response.use((response) => {
-                this.loading = false;
-                return response;
-            }, (error) => {
-                this.loading = false;
-                return Promise.reject(error);
-            });
-            axios.post('auth/admin/login', this.form).then(res => {
-                // console.dir(res)
-                localStorage.setItem('token', res.data.access_token);
-                localStorage.setItem('loggedIn', true);
-                this.$router.push('/admin')
-                    .then(res => console.log("logged in"))
-                    .catch(err => console.log("Wrong User"))
-            }).catch(err => {
-                console.dir(err)
-                this.text = err.response.data.status;
-                this.snackbar = true;
-            })
-
-        }
+            axios.interceptors.response.use(
+                (response) => {
+                    this.loading = false;
+                    return response;
+                },
+                (error) => {
+                    this.loading = false;
+                    return Promise.reject(error);
+                }
+            );
+            axios
+                .post("auth/login", this.form)
+                .then((res) => {
+                    // console.dir(res)
+                    localStorage.setItem("token", res.data.access_token);
+                    localStorage.setItem("loggedIn", true);
+                    this.$router
+                        .push("/admin")
+                        .then((res) => console.log("logged in"))
+                        .catch((err) => console.log("Wrong User"));
+                })
+                .catch((err) => {
+                    // console.dir(err.response.data.status);
+                    this.text = err.response.data.status;
+                    this.snackbar = true;
+                });
+        },
     },
     created() {
-        this.$vuetify.theme.dark = false
+        this.$vuetify.theme.dark = false;
     },
-}
+};
 </script>
 
 <style scoped>
-
 </style>

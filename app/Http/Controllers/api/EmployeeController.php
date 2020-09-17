@@ -7,6 +7,7 @@ use App\Http\Requests\StoreEmployeeInfo;
 use App\Http\Requests\UpdateEmployeeInfo;
 use App\Http\Resources\EmployeeCollectionResource;
 use App\Http\Resources\EmployeeResource;
+use App\model\Company;
 use App\model\Employee;
 use App\model\EmployeeInfo;
 use Carbon\Carbon;
@@ -22,7 +23,7 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        return EmployeeCollectionResource::collection(Employee::paginate(20));
+        return EmployeeCollectionResource::collection(Employee::all());
     }
 
 
@@ -69,7 +70,7 @@ class EmployeeController extends Controller
      */
     public function update(UpdateEmployeeInfo $request, $id)
     {
-       Employee::findOrFail($id)->update(['name' => $request->name,'email' =>  $request->email , 'company_id' => $request->company_id ]);
+        Employee::findOrFail($id)->update(['name' => $request->name, 'email' =>  $request->email, 'company_id' => $request->company_id]);
         $employee = Employee::find($id);
         return response([
             'data' => new EmployeeResource($employee)
@@ -86,6 +87,11 @@ class EmployeeController extends Controller
     {
         $employee->delete();
 
-        return response()->json(["message"=>"Employee deleted Successfully"],200);
+        return response()->json(["message" => "Employee deleted Successfully"], 200);
+    }
+
+    public function company()
+    {
+        return Company::all();
     }
 }

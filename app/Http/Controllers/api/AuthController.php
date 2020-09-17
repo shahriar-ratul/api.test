@@ -16,9 +16,9 @@ class AuthController extends Controller
     {
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             $accessToken = auth()->user()->createToken('authtoken')->accessToken;
-            return response()->json([ 'user' =>  new UserResource(auth()->user()),'access_token' => $accessToken], 200);
+            return response()->json(['access_token' => $accessToken], 200);
         } else {
-            return response()->json(['error' => 'Unauthorised'], 401);
+            return response()->json(['status' => 'Email or Password does not match'], 401);
         }
     }
 
@@ -35,13 +35,17 @@ class AuthController extends Controller
         return response()->json(['access_token' => $accessToken], 200);
     }
 
-    public function logout(){
+    public function logout()
+    {
         if (Auth::check()) {
             Auth::user()->token()->revoke();
-            return response()->json(['success' =>'logout_success'],200);
-        }else{
-            return response()->json(['error' =>'api.something_went_wrong'], 500);
+            return response()->json(['success' => 'logout_success'], 200);
+        } else {
+            return response()->json(['status' => 'Can not log out'], 500);
         }
     }
-
+    public function me()
+    {
+        return response()->json(['user' =>  new UserResource(auth()->user())]);
+    }
 }
