@@ -2225,14 +2225,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      valid: true,
       dialog: false,
       loading: false,
       snackbar: false,
       text: "item deleted successfully",
-      total: 0,
+      Rules: [function (v) {
+        return !!v || "This Field is required";
+      }],
       headers: [{
         text: "#",
         align: "left",
@@ -2250,16 +2255,14 @@ __webpack_require__.r(__webpack_exports__);
         sortable: false
       }],
       employees: [],
-      company: [],
+      companies: [],
       editedIndex: -1,
       editedItem: {
-        id: "",
         name: "",
         email: "",
         company_id: ""
       },
       defaultItem: {
-        id: "",
         name: "",
         email: "",
         company_id: ""
@@ -2284,7 +2287,8 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       axios.get("employees").then(function (res) {
-        _this.employees = res.data;
+        _this.employees = res.data.data.employees;
+        _this.companies = res.data.data.companies;
       })["catch"](function (err) {
         console.dir(err);
 
@@ -2316,14 +2320,14 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     editItem: function editItem(item) {
-      this.editedIndex = this.employees.data.indexOf(item);
+      this.editedIndex = this.employees.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
     deleteItem: function deleteItem(item) {
       var _this3 = this;
 
-      var index = this.employees.data.indexOf(item);
+      var index = this.employees.indexOf(item);
       var decide = confirm("Are you sure you want to delete this item?");
 
       if (decide) {
@@ -2331,7 +2335,7 @@ __webpack_require__.r(__webpack_exports__);
           _this3.snackbar = true;
           _this3.text = result.data.message;
 
-          _this3.employees.data.splice(index, 1);
+          _this3.employees.splice(index, 1);
         })["catch"](function (err) {
           console.log(err.response);
         });
@@ -2355,21 +2359,19 @@ __webpack_require__.r(__webpack_exports__);
         this.$nextTick(function () {
           var _this5 = this;
 
-          axios.put("admin/tag/" + this.editedItem.id, {
-            name: this.editedItem.name
-          }).then(function (res) {
-            // console.log(res.data.tag);
-            // console.log(this.employees[index])
-            Object.assign(_this5.employees.data[index], res.data.tag); // this.$set(this.editedItem, this.editedItem.id, res.data.tag)
-          })["catch"](function (err) {// console.log(err.response);
+          axios.put("employees/" + this.editedItem.id, this.editedItem).then(function (res) {
+            console.log(res.data.data); // console.log(this.employees[index])
+
+            Object.assign(_this5.employees[index], res.data.data); // this.$set(this.editedItem, this.editedItem.id, res.data.employee)
+          })["catch"](function (err) {
+            console.log(err.response);
           });
         }); // Object.assign(this.employees[this.editedIndex], this.editedItem)
       } else {
-        axios.post("employees", {
-          name: this.editedItem.name
-        }).then(function (res) {
-          // console.log(res.data);
-          _this6.employees.push(res.data.tag);
+        axios.post("employees", this.editedItem).then(function (res) {
+          console.log(res.data);
+
+          _this6.employees.push(res.data.employee);
         })["catch"](function (err) {
           console.dir(err);
         }); // this.employees.push(this.editedItem)
@@ -21986,7 +21988,7 @@ var render = function() {
       staticClass: "elevation-1",
       attrs: {
         headers: _vm.headers,
-        items: _vm.employees.data,
+        items: _vm.employees,
         "sort-by": "id",
         loading: _vm.loading,
         "loading-text": "Loading... Please wait",
@@ -22061,75 +22063,115 @@ var render = function() {
                       _c(
                         "v-card",
                         [
-                          _c("v-card-title", [
-                            _c("span", { staticClass: "headline" }, [
-                              _vm._v(_vm._s(_vm.formTitle))
-                            ])
-                          ]),
-                          _vm._v(" "),
                           _c(
-                            "v-card-text",
+                            "v-form",
+                            {
+                              model: {
+                                value: _vm.valid,
+                                callback: function($$v) {
+                                  _vm.valid = $$v
+                                },
+                                expression: "valid"
+                              }
+                            },
                             [
+                              _c("v-card-title", [
+                                _c("span", { staticClass: "headline" }, [
+                                  _vm._v(_vm._s(_vm.formTitle))
+                                ])
+                              ]),
+                              _vm._v(" "),
                               _c(
-                                "v-container",
+                                "v-card-text",
                                 [
                                   _c(
-                                    "v-row",
+                                    "v-container",
                                     [
                                       _c(
-                                        "v-col",
-                                        { attrs: { cols: "12" } },
+                                        "v-row",
                                         [
-                                          _c("v-text-field", {
-                                            attrs: { label: "Name" },
-                                            model: {
-                                              value: _vm.editedItem.name,
-                                              callback: function($$v) {
-                                                _vm.$set(
-                                                  _vm.editedItem,
-                                                  "name",
-                                                  $$v
-                                                )
-                                              },
-                                              expression: "editedItem.name"
-                                            }
-                                          })
-                                        ],
-                                        1
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "v-col",
-                                        { attrs: { cols: "12" } },
-                                        [
-                                          _c("v-text-field", {
-                                            attrs: { label: "Email" },
-                                            model: {
-                                              value: _vm.editedItem.email,
-                                              callback: function($$v) {
-                                                _vm.$set(
-                                                  _vm.editedItem,
-                                                  "email",
-                                                  $$v
-                                                )
-                                              },
-                                              expression: "editedItem.email"
-                                            }
-                                          })
-                                        ],
-                                        1
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "v-col",
-                                        { attrs: { cols: "12" } },
-                                        [
-                                          _c("v-select", {
-                                            attrs: {
-                                              items: _vm.company,
-                                              label: "Company"
-                                            }
-                                          })
+                                          _c(
+                                            "v-col",
+                                            { attrs: { cols: "12" } },
+                                            [
+                                              _c("v-text-field", {
+                                                attrs: {
+                                                  label: "Name",
+                                                  required: "",
+                                                  rules: _vm.Rules
+                                                },
+                                                model: {
+                                                  value: _vm.editedItem.name,
+                                                  callback: function($$v) {
+                                                    _vm.$set(
+                                                      _vm.editedItem,
+                                                      "name",
+                                                      $$v
+                                                    )
+                                                  },
+                                                  expression: "editedItem.name"
+                                                }
+                                              })
+                                            ],
+                                            1
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "v-col",
+                                            { attrs: { cols: "12" } },
+                                            [
+                                              _c("v-text-field", {
+                                                attrs: {
+                                                  label: "Email",
+                                                  required: "",
+                                                  rules: _vm.Rules
+                                                },
+                                                model: {
+                                                  value: _vm.editedItem.email,
+                                                  callback: function($$v) {
+                                                    _vm.$set(
+                                                      _vm.editedItem,
+                                                      "email",
+                                                      $$v
+                                                    )
+                                                  },
+                                                  expression: "editedItem.email"
+                                                }
+                                              })
+                                            ],
+                                            1
+                                          ),
+                                          _vm._v(" "),
+                                          _c(
+                                            "v-col",
+                                            { attrs: { cols: "12" } },
+                                            [
+                                              _c("v-select", {
+                                                attrs: {
+                                                  items: _vm.companies,
+                                                  "item-text": "name",
+                                                  "item-value": "id",
+                                                  required: "",
+                                                  rules: _vm.Rules,
+                                                  label: "Company"
+                                                },
+                                                model: {
+                                                  value:
+                                                    _vm.editedItem.company_id,
+                                                  callback: function($$v) {
+                                                    _vm.$set(
+                                                      _vm.editedItem,
+                                                      "company_id",
+                                                      $$v
+                                                    )
+                                                  },
+                                                  expression:
+                                                    "editedItem.company_id"
+                                                }
+                                              })
+                                            ],
+                                            1
+                                          )
                                         ],
                                         1
                                       )
@@ -22138,32 +22180,39 @@ var render = function() {
                                   )
                                 ],
                                 1
-                              )
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c(
-                            "v-card-actions",
-                            [
-                              _c("v-spacer"),
-                              _vm._v(" "),
-                              _c(
-                                "v-btn",
-                                {
-                                  attrs: { color: "blue darken-1", text: "" },
-                                  on: { click: _vm.close }
-                                },
-                                [_vm._v("Cancel")]
                               ),
                               _vm._v(" "),
                               _c(
-                                "v-btn",
-                                {
-                                  attrs: { color: "blue darken-1", text: "" },
-                                  on: { click: _vm.save }
-                                },
-                                [_vm._v("Save")]
+                                "v-card-actions",
+                                [
+                                  _c("v-spacer"),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: {
+                                        color: "blue darken-1",
+                                        text: ""
+                                      },
+                                      on: { click: _vm.close }
+                                    },
+                                    [_vm._v("Cancel")]
+                                  ),
+                                  _vm._v(" "),
+                                  _c(
+                                    "v-btn",
+                                    {
+                                      attrs: {
+                                        color: "blue darken-1",
+                                        disabled: !_vm.valid,
+                                        text: ""
+                                      },
+                                      on: { click: _vm.save }
+                                    },
+                                    [_vm._v("Save")]
+                                  )
+                                ],
+                                1
                               )
                             ],
                             1
@@ -105456,11 +105505,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuetify_lib_components_VDataTable__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! vuetify/lib/components/VDataTable */ "./node_modules/vuetify/lib/components/VDataTable/index.js");
 /* harmony import */ var vuetify_lib_components_VDialog__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! vuetify/lib/components/VDialog */ "./node_modules/vuetify/lib/components/VDialog/index.js");
 /* harmony import */ var vuetify_lib_components_VDivider__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! vuetify/lib/components/VDivider */ "./node_modules/vuetify/lib/components/VDivider/index.js");
-/* harmony import */ var vuetify_lib_components_VIcon__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! vuetify/lib/components/VIcon */ "./node_modules/vuetify/lib/components/VIcon/index.js");
-/* harmony import */ var vuetify_lib_components_VSelect__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! vuetify/lib/components/VSelect */ "./node_modules/vuetify/lib/components/VSelect/index.js");
-/* harmony import */ var vuetify_lib_components_VSnackbar__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! vuetify/lib/components/VSnackbar */ "./node_modules/vuetify/lib/components/VSnackbar/index.js");
-/* harmony import */ var vuetify_lib_components_VTextField__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! vuetify/lib/components/VTextField */ "./node_modules/vuetify/lib/components/VTextField/index.js");
-/* harmony import */ var vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! vuetify/lib/components/VToolbar */ "./node_modules/vuetify/lib/components/VToolbar/index.js");
+/* harmony import */ var vuetify_lib_components_VForm__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! vuetify/lib/components/VForm */ "./node_modules/vuetify/lib/components/VForm/index.js");
+/* harmony import */ var vuetify_lib_components_VIcon__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! vuetify/lib/components/VIcon */ "./node_modules/vuetify/lib/components/VIcon/index.js");
+/* harmony import */ var vuetify_lib_components_VSelect__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! vuetify/lib/components/VSelect */ "./node_modules/vuetify/lib/components/VSelect/index.js");
+/* harmony import */ var vuetify_lib_components_VSnackbar__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! vuetify/lib/components/VSnackbar */ "./node_modules/vuetify/lib/components/VSnackbar/index.js");
+/* harmony import */ var vuetify_lib_components_VTextField__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! vuetify/lib/components/VTextField */ "./node_modules/vuetify/lib/components/VTextField/index.js");
+/* harmony import */ var vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! vuetify/lib/components/VToolbar */ "./node_modules/vuetify/lib/components/VToolbar/index.js");
 
 
 
@@ -105499,7 +105549,8 @@ var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_
 
 
 
-_node_modules_vuetify_loader_lib_runtime_installComponents_js__WEBPACK_IMPORTED_MODULE_3___default()(component, {VBtn: vuetify_lib_components_VBtn__WEBPACK_IMPORTED_MODULE_4__["VBtn"],VCard: vuetify_lib_components_VCard__WEBPACK_IMPORTED_MODULE_5__["VCard"],VCardActions: vuetify_lib_components_VCard__WEBPACK_IMPORTED_MODULE_5__["VCardActions"],VCardText: vuetify_lib_components_VCard__WEBPACK_IMPORTED_MODULE_5__["VCardText"],VCardTitle: vuetify_lib_components_VCard__WEBPACK_IMPORTED_MODULE_5__["VCardTitle"],VCol: vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_6__["VCol"],VContainer: vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_6__["VContainer"],VDataTable: vuetify_lib_components_VDataTable__WEBPACK_IMPORTED_MODULE_7__["VDataTable"],VDialog: vuetify_lib_components_VDialog__WEBPACK_IMPORTED_MODULE_8__["VDialog"],VDivider: vuetify_lib_components_VDivider__WEBPACK_IMPORTED_MODULE_9__["VDivider"],VIcon: vuetify_lib_components_VIcon__WEBPACK_IMPORTED_MODULE_10__["VIcon"],VRow: vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_6__["VRow"],VSelect: vuetify_lib_components_VSelect__WEBPACK_IMPORTED_MODULE_11__["VSelect"],VSnackbar: vuetify_lib_components_VSnackbar__WEBPACK_IMPORTED_MODULE_12__["VSnackbar"],VSpacer: vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_6__["VSpacer"],VTextField: vuetify_lib_components_VTextField__WEBPACK_IMPORTED_MODULE_13__["VTextField"],VToolbar: vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_14__["VToolbar"],VToolbarTitle: vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_14__["VToolbarTitle"]})
+
+_node_modules_vuetify_loader_lib_runtime_installComponents_js__WEBPACK_IMPORTED_MODULE_3___default()(component, {VBtn: vuetify_lib_components_VBtn__WEBPACK_IMPORTED_MODULE_4__["VBtn"],VCard: vuetify_lib_components_VCard__WEBPACK_IMPORTED_MODULE_5__["VCard"],VCardActions: vuetify_lib_components_VCard__WEBPACK_IMPORTED_MODULE_5__["VCardActions"],VCardText: vuetify_lib_components_VCard__WEBPACK_IMPORTED_MODULE_5__["VCardText"],VCardTitle: vuetify_lib_components_VCard__WEBPACK_IMPORTED_MODULE_5__["VCardTitle"],VCol: vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_6__["VCol"],VContainer: vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_6__["VContainer"],VDataTable: vuetify_lib_components_VDataTable__WEBPACK_IMPORTED_MODULE_7__["VDataTable"],VDialog: vuetify_lib_components_VDialog__WEBPACK_IMPORTED_MODULE_8__["VDialog"],VDivider: vuetify_lib_components_VDivider__WEBPACK_IMPORTED_MODULE_9__["VDivider"],VForm: vuetify_lib_components_VForm__WEBPACK_IMPORTED_MODULE_10__["VForm"],VIcon: vuetify_lib_components_VIcon__WEBPACK_IMPORTED_MODULE_11__["VIcon"],VRow: vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_6__["VRow"],VSelect: vuetify_lib_components_VSelect__WEBPACK_IMPORTED_MODULE_12__["VSelect"],VSnackbar: vuetify_lib_components_VSnackbar__WEBPACK_IMPORTED_MODULE_13__["VSnackbar"],VSpacer: vuetify_lib_components_VGrid__WEBPACK_IMPORTED_MODULE_6__["VSpacer"],VTextField: vuetify_lib_components_VTextField__WEBPACK_IMPORTED_MODULE_14__["VTextField"],VToolbar: vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_15__["VToolbar"],VToolbarTitle: vuetify_lib_components_VToolbar__WEBPACK_IMPORTED_MODULE_15__["VToolbarTitle"]})
 
 
 /* hot reload */

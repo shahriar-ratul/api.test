@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreEmployeeInfo;
 use App\Http\Requests\UpdateEmployeeInfo;
+use App\Http\Resources\CompanyResource;
 use App\Http\Resources\EmployeeCollectionResource;
 use App\Http\Resources\EmployeeResource;
 use App\model\Company;
@@ -23,7 +24,11 @@ class EmployeeController extends Controller
      */
     public function index()
     {
-        return EmployeeCollectionResource::collection(Employee::all());
+        $data =  [
+            'employees' => EmployeeCollectionResource::collection(Employee::all()),
+            'companies' => CompanyResource::collection(Company::all()),
+        ];
+        return response()->json(['data' => $data]);
     }
 
 
@@ -88,10 +93,5 @@ class EmployeeController extends Controller
         $employee->delete();
 
         return response()->json(["message" => "Employee deleted Successfully"], 200);
-    }
-
-    public function company()
-    {
-        return Company::all();
     }
 }

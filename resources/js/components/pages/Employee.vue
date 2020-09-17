@@ -1,5 +1,5 @@
 <template>
-<v-data-table :headers="headers" :items="employees.data" sort-by="id" class="elevation-1" :loading="loading" loading-text="Loading... Please wait" :items-per-page="5" @pagination="paginate" :footer-props="{
+<v-data-table :headers="headers" :items="employees" sort-by="id" class="elevation-1" :loading="loading" loading-text="Loading... Please wait" :items-per-page="5" @pagination="paginate" :footer-props="{
             itemsPerPageOptions:[10,15,20,-1],
             itemsPerPageText:'employees Per Page',
             showCurrentPage:true,
@@ -16,31 +16,33 @@
                     <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">New Item</v-btn>
                 </template>
                 <v-card>
-                    <v-card-title>
-                        <span class="headline">{{ formTitle }}</span>
-                    </v-card-title>
+                    <v-form v-model="valid">
+                        <v-card-title>
+                            <span class="headline">{{ formTitle }}</span>
+                        </v-card-title>
 
-                    <v-card-text>
-                        <v-container>
-                            <v-row>
-                                <v-col cols="12">
-                                    <v-text-field v-model="editedItem.name" label="Name"></v-text-field>
-                                </v-col>
-                                <v-col cols="12">
-                                    <v-text-field v-model="editedItem.email" label="Email"></v-text-field>
-                                </v-col>
-                                <v-col cols="12">
-                                    <v-select :items="company" label="Company"></v-select>
-                                </v-col>
-                            </v-row>
-                        </v-container>
-                    </v-card-text>
+                        <v-card-text>
+                            <v-container>
+                                <v-row>
+                                    <v-col cols="12">
+                                        <v-text-field v-model="editedItem.name" label="Name" required :rules="Rules"></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <v-text-field v-model="editedItem.email" label="Email" required :rules="Rules"></v-text-field>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <v-select :items="companies" item-text="name" item-value="id" required :rules="Rules" v-model="editedItem.company_id" label="Company"></v-select>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-card-text>
 
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                        <v-btn color="blue darken-1" text @click="save">Save</v-btn>
-                    </v-card-actions>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+                            <v-btn color="blue darken-1" :disabled="!valid" text @click="save">Save</v-btn>
+                        </v-card-actions>
+                    </v-form>
                 </v-card>
             </v-dialog>
         </v-toolbar>
@@ -66,11 +68,12 @@
 <script>
 export default {
     data: () => ({
+        valid: true,
         dialog: false,
         loading: false,
         snackbar: false,
         text: "item deleted successfully",
-        total: 0,
+        Rules: [(v) => !!v || "This Field is required"],
 
         headers: [{
                 text: "#",
@@ -94,16 +97,14 @@ export default {
             },
         ],
         employees: [],
-        company: [],
+        companies: [],
         editedIndex: -1,
         editedItem: {
-            id: "",
             name: "",
             email: "",
             company_id: "",
         },
         defaultItem: {
-            id: "",
             name: "",
             email: "",
             company_id: "",
@@ -131,7 +132,8 @@ export default {
             axios
                 .get(`employees`)
                 .then((res) => {
-                    this.employees = res.data;
+                    this.employees = res.data.data.employees;
+                    this.companies = res.data.data.companies;
                 })
                 .catch((err) => {
                     console.dir(err);
@@ -168,13 +170,13 @@ export default {
         },
 
         editItem(item) {
-            this.editedIndex = this.employees.data.indexOf(item);
+            this.editedIndex = this.employees.indexOf(item);
             this.editedItem = Object.assign({}, item);
             this.dialog = true;
         },
 
         deleteItem(item) {
-            const index = this.employees.data.indexOf(item);
+            const index = this.employees.indexOf(item);
             let decide = confirm("Are you sure you want to delete this item?");
             if (decide) {
                 axios
@@ -182,7 +184,7 @@ export default {
                     .then((result) => {
                         this.snackbar = true;
                         this.text = result.data.message;
-                        this.employees.data.splice(index, 1);
+                        this.employees.splice(index, 1);
                     })
                     .catch((err) => {
                         console.log(err.response);
@@ -204,28 +206,24 @@ export default {
                 const index = this.editedIndex;
                 this.$nextTick(function () {
                     axios
-                        .put("admin/tag/" + this.editedItem.id, {
-                            name: this.editedItem.name,
-                        })
+                        .put("employees/" + this.editedItem.id, this.editedItem)
                         .then((res) => {
-                            // console.log(res.data.tag);
+                            console.log(res.data.data);
                             // console.log(this.employees[index])
-                            Object.assign(this.employees.data[index], res.data.tag);
-                            // this.$set(this.editedItem, this.editedItem.id, res.data.tag)
+                            Object.assign(this.employees[index], res.data.data);
+                            // this.$set(this.editedItem, this.editedItem.id, res.data.employee)
                         })
                         .catch((err) => {
-                            // console.log(err.response);
+                            console.log(err.response);
                         });
                 });
                 // Object.assign(this.employees[this.editedIndex], this.editedItem)
             } else {
                 axios
-                    .post("employees", {
-                        name: this.editedItem.name,
-                    })
+                    .post("employees", this.editedItem)
                     .then((res) => {
-                        // console.log(res.data);
-                        this.employees.push(res.data.tag);
+                        console.log(res.data);
+                        this.employees.push(res.data.employee);
                     })
                     .catch((err) => {
                         console.dir(err);
