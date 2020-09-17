@@ -19,7 +19,7 @@
                 <v-list-item-action>
                     <v-icon color="grey darken-1">mdi-cog</v-icon>
                 </v-list-item-action>
-                <v-list-item-title>Logout</v-list-item-title>
+                <v-list-item-title @click="logout">Logout</v-list-item-title>
             </v-list-item>
         </v-list>
     </v-navigation-drawer>
@@ -86,6 +86,25 @@ export default {
     },
     created() {
         this.$vuetify.theme.dark = false;
+    },
+    methods: {
+        logout() {
+            axios
+                .post("auth/logout")
+                .then((res) => {
+                    // console.dir(res);
+                    localStorage.removeItem("token", res.data.access_token);
+                    this.$router
+                        .push("/login")
+                        .then((res) => console.log("logged Out"))
+                        .catch((err) => console.log(err));
+                })
+                .catch((err) => {
+                    // console.dir(err.response.data.status);
+                    this.text = err.response.data.status;
+                    this.snackbar = true;
+                });
+        },
     },
 };
 </script>

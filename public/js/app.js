@@ -1996,6 +1996,26 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     this.$vuetify.theme.dark = false;
+  },
+  methods: {
+    logout: function logout() {
+      var _this = this;
+
+      axios.post("auth/logout").then(function (res) {
+        // console.dir(res);
+        localStorage.removeItem("token", res.data.access_token);
+
+        _this.$router.push("/login").then(function (res) {
+          return console.log("logged Out");
+        })["catch"](function (err) {
+          return console.log(err);
+        });
+      })["catch"](function (err) {
+        // console.dir(err.response.data.status);
+        _this.text = err.response.data.status;
+        _this.snackbar = true;
+      });
+    }
   }
 });
 
@@ -21616,7 +21636,9 @@ var render = function() {
                     1
                   ),
                   _vm._v(" "),
-                  _c("v-list-item-title", [_vm._v("Logout")])
+                  _c("v-list-item-title", { on: { click: _vm.logout } }, [
+                    _vm._v("Logout")
+                  ])
                 ],
                 1
               )
